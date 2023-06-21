@@ -1,4 +1,4 @@
-namespace go hertz-api
+namespace go api
 
 struct AdditionRequest {
     1: required i32 FirstNum (api.body="firstnum");
@@ -9,6 +9,6 @@ struct AdditionResponse {
     1: string Sum;
 }
 
-service StudentApi {
+service AdditionApi {
    AdditionResponse addNumbers(1: AdditionRequest req) (api.post="/add");
 }
