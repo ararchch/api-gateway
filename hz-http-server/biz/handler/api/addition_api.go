@@ -4,6 +4,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 
 	api "github.com/ararchch/api-gateway/hz-http-server/biz/model/api"
 	"github.com/cloudwego/hertz/pkg/app"
@@ -21,7 +22,9 @@ func AddNumbers(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	resp := new(api.AdditionResponse)
+	resp := api.AdditionResponse{
+		Sum: fmt.Sprintf("%d", req.FirstNum + req.SecondNum),
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
