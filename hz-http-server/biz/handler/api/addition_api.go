@@ -27,7 +27,7 @@ func AddNumbers(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	client, err := additionmanagement.NewClient("sum", kitexClient.WithHostPorts("127.0.0.1:8000"))
+	client, err := additionmanagement.NewClient("sum", kitexClient.WithHostPorts("127.0.0.1:8888"))
 	if err != nil {
 		panic(err)
 	}
