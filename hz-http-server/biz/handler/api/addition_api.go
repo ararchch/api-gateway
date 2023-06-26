@@ -10,16 +10,64 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	
-	kitexClient "github.com/cloudwego/kitex/client"
+	// kitexClient "github.com/cloudwego/kitex/client"
 	"github.com/ararchch/api-gateway/kitex-rpc-server/kitex_gen/addition/management"
-	"github.com/ararchch/api-gateway/kitex-rpc-server/kitex_gen/addition/management/additionmanagement"	
+	//"github.com/ararchch/api-gateway/kitex-rpc-server/kitex_gen/addition/management/additionmanagement"	
+	"github.com/cloudwego/kitex/client/genericclient"
+  	"github.com/cloudwego/kitex/pkg/generic"
 )
+
+// type CalculatorClient struct {
+// 	genericclient.Client
+//   }
+  
+//   func CalClient()  {
+// 	p, err := generic.NewThriftFileProvider("../../../../thrift-idl/gateway_api.thrift")
+// 	if err != nil {
+// 	  panic(err)
+// 	}
+  
+// 	g, err := generic.JSONThriftGeneric(p)
+// 	if err != nil {
+// 	  panic(err)
+// 	}
+  
+// 	client, err := genericclient.NewClient("addition", g)
+// 	if err != nil {
+// 	  panic(err)
+// 	}
+  
+// 	return client
+//   }
 
 // AddNumbers .
 // @router /add [POST]
 func AddNumbers(ctx context.Context, c *app.RequestContext) {
+
+	fmt.Print("Checkpoitn 1")
+
 	var err error
 	var req api.AdditionRequest
+
+/////////////////////////
+
+	p, err := generic.NewThriftFileProvider("../thrift-idl/gateway_api.thrift")
+	if err != nil {
+	  panic(err)
+	}
+  
+	g, err := generic.JSONThriftGeneric(p)
+	if err != nil {
+	  panic(err)
+	}
+  
+	client, err := genericclient.NewClient("AdditionApi", g)
+	if err != nil {
+	  panic(err)
+	}
+
+////////////////////////
+	
 
 	err = c.BindAndValidate(&req)
 	if err != nil {
@@ -27,25 +75,40 @@ func AddNumbers(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	client, err := additionmanagement.NewClient("sum", kitexClient.WithHostPorts("127.0.0.1:8888"))
-	if err != nil {
-		panic(err)
-	}
+	fmt.Print("Checkpoitn 2")
+
+
+	// client, err := additionmanagement.NewClient("sum", kitexClient.WithHostPorts("127.0.0.1:8888"))
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	reqRpc := &management.AdditionRequest{
 		FirstNum: req.FirstNum,
 		SecondNum: req.SecondNum,
 	}
 
-	respRpc, err := client.AddNumbers(ctx, reqRpc)
+	fmt.Print("Checkpoitn 3")
+
+
+	respRpc, err := client.GenericCall(ctx, "addNumbers", reqRpc)
 	if err != nil {
-		
+		fmt.Print("hong ray is a wanker")
 		panic(err)
 	}
 
-	resp := api.AdditionResponse{
-		Sum: fmt.Sprintf("%d", respRpc.Sum),
+	fmt.Printf("%s <---------------------------", respRpc)
+
+	// respRpc, err := client.AddNumbers(ctx, reqRpc)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	respObj := respRpc.(*management.AdditionResponse)
+
+	result := api.AdditionResponse{
+		Sum: fmt.Sprintf("%d", respObj.Sum),
 	}
 
-	c.JSON(consts.StatusOK, resp)
+	c.JSON(consts.StatusOK, result)
 }
