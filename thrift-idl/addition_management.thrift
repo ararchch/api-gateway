@@ -1,12 +1,12 @@
 namespace go addition.management
 
 struct AdditionRequest {
-    1: required i32 FirstNum;
-    2: required i32 SecondNum;
+    1: required string FirstNum;
+    2: required string SecondNum;
 }
 
 struct AdditionResponse {
-    1: i32 Sum;
+    1: string Sum;
 }
 
 service AdditionManagement {
