@@ -7,8 +7,12 @@ import (
 )
 
 func main() {
-	h := server.Default()
+
+	// initating new hertz server at port 8080
+	h := server.Default(server.WithHostPorts("127.0.0.1:8080"))
 
 	register(h)
+
+	// run the server
 	h.Spin()
 }
