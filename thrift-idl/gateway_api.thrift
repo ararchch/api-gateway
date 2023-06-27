@@ -1,8 +1,8 @@
 namespace go api
 
 struct AdditionRequest {
-    1: required i32 FirstNum (api.body="firstnum");
-    2: required i32 SecondNum (api.body="secondnum")
+    1: required string FirstNum (api.body="FirstNum");
+    2: required string SecondNum (api.body="SecondNum")
 }
 
 struct AdditionResponse {
