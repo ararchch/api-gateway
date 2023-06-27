@@ -9,19 +9,19 @@ import (
 )
 
 type AdditionRequest struct {
-	FirstNum  int32 `thrift:"FirstNum,1,required" form:"firstnum,required" json:"firstnum,required"`
-	SecondNum int32 `thrift:"SecondNum,2,required" form:"secondnum,required" json:"secondnum,required"`
+	FirstNum  string `thrift:"FirstNum,1,required" form:"firstnum,required" json:"firstnum,required"`
+	SecondNum string `thrift:"SecondNum,2,required" form:"secondnum,required" json:"secondnum,required"`
 }
 
 func NewAdditionRequest() *AdditionRequest {
 	return &AdditionRequest{}
 }
 
-func (p *AdditionRequest) GetFirstNum() (v int32) {
+func (p *AdditionRequest) GetFirstNum() (v string) {
 	return p.FirstNum
 }
 
-func (p *AdditionRequest) GetSecondNum() (v int32) {
+func (p *AdditionRequest) GetSecondNum() (v string) {
 	return p.SecondNum
 }
 
@@ -52,7 +52,7 @@ func (p *AdditionRequest) Read(iprot thrift.TProtocol) (err error) {
 
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.I32 {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
@@ -63,7 +63,7 @@ func (p *AdditionRequest) Read(iprot thrift.TProtocol) (err error) {
 				}
 			}
 		case 2:
-			if fieldTypeId == thrift.I32 {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
@@ -115,7 +115,7 @@ RequiredFieldNotSetError:
 }
 
 func (p *AdditionRequest) ReadField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
 		p.FirstNum = v
@@ -124,7 +124,7 @@ func (p *AdditionRequest) ReadField1(iprot thrift.TProtocol) error {
 }
 
 func (p *AdditionRequest) ReadField2(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
 		p.SecondNum = v
@@ -166,10 +166,10 @@ WriteStructEndError:
 }
 
 func (p *AdditionRequest) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("FirstNum", thrift.I32, 1); err != nil {
+	if err = oprot.WriteFieldBegin("FirstNum", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteI32(p.FirstNum); err != nil {
+	if err := oprot.WriteString(p.FirstNum); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -183,10 +183,10 @@ WriteFieldEndError:
 }
 
 func (p *AdditionRequest) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("SecondNum", thrift.I32, 2); err != nil {
+	if err = oprot.WriteFieldBegin("SecondNum", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteI32(p.SecondNum); err != nil {
+	if err := oprot.WriteString(p.SecondNum); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {

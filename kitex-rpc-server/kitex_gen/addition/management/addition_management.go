@@ -6,11 +6,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
+	"strings"
 )
 
 type AdditionRequest struct {
-	FirstNum  int32 `thrift:"FirstNum,1,required" frugal:"1,required,i32" json:"FirstNum"`
-	SecondNum int32 `thrift:"SecondNum,2,required" frugal:"2,required,i32" json:"SecondNum"`
+	FirstNum  string `thrift:"FirstNum,1,required" frugal:"1,required,string" json:"FirstNum"`
+	SecondNum string `thrift:"SecondNum,2,required" frugal:"2,required,string" json:"SecondNum"`
 }
 
 func NewAdditionRequest() *AdditionRequest {
@@ -21,17 +22,17 @@ func (p *AdditionRequest) InitDefault() {
 	*p = AdditionRequest{}
 }
 
-func (p *AdditionRequest) GetFirstNum() (v int32) {
+func (p *AdditionRequest) GetFirstNum() (v string) {
 	return p.FirstNum
 }
 
-func (p *AdditionRequest) GetSecondNum() (v int32) {
+func (p *AdditionRequest) GetSecondNum() (v string) {
 	return p.SecondNum
 }
-func (p *AdditionRequest) SetFirstNum(val int32) {
+func (p *AdditionRequest) SetFirstNum(val string) {
 	p.FirstNum = val
 }
-func (p *AdditionRequest) SetSecondNum(val int32) {
+func (p *AdditionRequest) SetSecondNum(val string) {
 	p.SecondNum = val
 }
 
@@ -62,7 +63,7 @@ func (p *AdditionRequest) Read(iprot thrift.TProtocol) (err error) {
 
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.I32 {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
@@ -73,7 +74,7 @@ func (p *AdditionRequest) Read(iprot thrift.TProtocol) (err error) {
 				}
 			}
 		case 2:
-			if fieldTypeId == thrift.I32 {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
@@ -125,7 +126,7 @@ RequiredFieldNotSetError:
 }
 
 func (p *AdditionRequest) ReadField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
 		p.FirstNum = v
@@ -134,7 +135,7 @@ func (p *AdditionRequest) ReadField1(iprot thrift.TProtocol) error {
 }
 
 func (p *AdditionRequest) ReadField2(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
 		p.SecondNum = v
@@ -176,10 +177,10 @@ WriteStructEndError:
 }
 
 func (p *AdditionRequest) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("FirstNum", thrift.I32, 1); err != nil {
+	if err = oprot.WriteFieldBegin("FirstNum", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteI32(p.FirstNum); err != nil {
+	if err := oprot.WriteString(p.FirstNum); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -193,10 +194,10 @@ WriteFieldEndError:
 }
 
 func (p *AdditionRequest) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("SecondNum", thrift.I32, 2); err != nil {
+	if err = oprot.WriteFieldBegin("SecondNum", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteI32(p.SecondNum); err != nil {
+	if err := oprot.WriteString(p.SecondNum); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -231,23 +232,23 @@ func (p *AdditionRequest) DeepEqual(ano *AdditionRequest) bool {
 	return true
 }
 
-func (p *AdditionRequest) Field1DeepEqual(src int32) bool {
+func (p *AdditionRequest) Field1DeepEqual(src string) bool {
 
-	if p.FirstNum != src {
+	if strings.Compare(p.FirstNum, src) != 0 {
 		return false
 	}
 	return true
 }
-func (p *AdditionRequest) Field2DeepEqual(src int32) bool {
+func (p *AdditionRequest) Field2DeepEqual(src string) bool {
 
-	if p.SecondNum != src {
+	if strings.Compare(p.SecondNum, src) != 0 {
 		return false
 	}
 	return true
 }
 
 type AdditionResponse struct {
-	Sum int32 `thrift:"Sum,1" frugal:"1,default,i32" json:"Sum"`
+	Sum string `thrift:"Sum,1" frugal:"1,default,string" json:"Sum"`
 }
 
 func NewAdditionResponse() *AdditionResponse {
@@ -258,10 +259,10 @@ func (p *AdditionResponse) InitDefault() {
 	*p = AdditionResponse{}
 }
 
-func (p *AdditionResponse) GetSum() (v int32) {
+func (p *AdditionResponse) GetSum() (v string) {
 	return p.Sum
 }
-func (p *AdditionResponse) SetSum(val int32) {
+func (p *AdditionResponse) SetSum(val string) {
 	p.Sum = val
 }
 
@@ -289,7 +290,7 @@ func (p *AdditionResponse) Read(iprot thrift.TProtocol) (err error) {
 
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.I32 {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
@@ -329,7 +330,7 @@ ReadStructEndError:
 }
 
 func (p *AdditionResponse) ReadField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
 		p.Sum = v
@@ -367,10 +368,10 @@ WriteStructEndError:
 }
 
 func (p *AdditionResponse) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Sum", thrift.I32, 1); err != nil {
+	if err = oprot.WriteFieldBegin("Sum", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteI32(p.Sum); err != nil {
+	if err := oprot.WriteString(p.Sum); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -402,9 +403,9 @@ func (p *AdditionResponse) DeepEqual(ano *AdditionResponse) bool {
 	return true
 }
 
-func (p *AdditionResponse) Field1DeepEqual(src int32) bool {
+func (p *AdditionResponse) Field1DeepEqual(src string) bool {
 
-	if p.Sum != src {
+	if strings.Compare(p.Sum, src) != 0 {
 		return false
 	}
 	return true

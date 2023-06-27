@@ -4,70 +4,47 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	api "github.com/ararchch/api-gateway/hz-http-server/biz/model/api"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
-	
-	// kitexClient "github.com/cloudwego/kitex/client"
+
 	"github.com/ararchch/api-gateway/kitex-rpc-server/kitex_gen/addition/management"
-	//"github.com/ararchch/api-gateway/kitex-rpc-server/kitex_gen/addition/management/additionmanagement"	
+	kitexClient "github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/client/genericclient"
-  	"github.com/cloudwego/kitex/pkg/generic"
+	"github.com/cloudwego/kitex/pkg/generic"
+	etcd "github.com/kitex-contrib/registry-etcd"
 )
 
-// type CalculatorClient struct {
-// 	genericclient.Client
-//   }
-  
-//   func CalClient()  {
-// 	p, err := generic.NewThriftFileProvider("../../../../thrift-idl/gateway_api.thrift")
-// 	if err != nil {
-// 	  panic(err)
-// 	}
-  
-// 	g, err := generic.JSONThriftGeneric(p)
-// 	if err != nil {
-// 	  panic(err)
-// 	}
-  
-// 	client, err := genericclient.NewClient("addition", g)
-// 	if err != nil {
-// 	  panic(err)
-// 	}
-  
-// 	return client
-//   }
 
 // AddNumbers .
 // @router /add [POST]
 func AddNumbers(ctx context.Context, c *app.RequestContext) {
 
-	fmt.Print("Checkpoitn 1")
-
 	var err error
 	var req api.AdditionRequest
 
-/////////////////////////
+	r, err := etcd.NewEtcdResolver([]string{"127.0.0.1:2379"})
+	if err != nil {
+		panic(err)
+	}
 
 	p, err := generic.NewThriftFileProvider("../thrift-idl/gateway_api.thrift")
 	if err != nil {
-	  panic(err)
-	}
-  
-	g, err := generic.JSONThriftGeneric(p)
-	if err != nil {
-	  panic(err)
-	}
-  
-	client, err := genericclient.NewClient("AdditionApi", g)
-	if err != nil {
-	  panic(err)
+		panic(err)
 	}
 
-////////////////////////
-	
+	g, err := generic.JSONThriftGeneric(p)
+	if err != nil {
+		panic(err)
+	}
+
+	client, err := genericclient.NewClient("AdditionApi", g, kitexClient.WithResolver(r))
+	if err != nil {
+		panic(err)
+	}
 
 	err = c.BindAndValidate(&req)
 	if err != nil {
@@ -75,25 +52,23 @@ func AddNumbers(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	fmt.Print("Checkpoitn 2")
-
-
-	// client, err := additionmanagement.NewClient("sum", kitexClient.WithHostPorts("127.0.0.1:8888"))
-	// if err != nil {
-	// 	panic(err)
-	// }
-
 	reqRpc := &management.AdditionRequest{
-		FirstNum: req.FirstNum,
+		FirstNum:  req.FirstNum,
 		SecondNum: req.SecondNum,
 	}
 
-	fmt.Print("Checkpoitn 3")
-
-
-	respRpc, err := client.GenericCall(ctx, "addNumbers", reqRpc)
+	jsonbody, err := json.Marshal(reqRpc)
 	if err != nil {
-		fmt.Print("hong ray is a wanker")
+		panic(err)
+	}
+	jsonString := string(jsonbody)
+
+	fmt.Print(jsonString)
+
+	respRpc, err := client.GenericCall(ctx, "addNumbers", jsonString)
+	if err != nil {
+		fmt.Print("HELLOOOOO")
+		fmt.Print(respRpc)
 		panic(err)
 	}
 
@@ -104,10 +79,9 @@ func AddNumbers(ctx context.Context, c *app.RequestContext) {
 	// 	panic(err)
 	// }
 
-	respObj := respRpc.(*management.AdditionResponse)
 
 	result := api.AdditionResponse{
-		Sum: fmt.Sprintf("%d", respObj.Sum),
+		Sum: fmt.Sprint(respRpc),
 	}
 
 	c.JSON(consts.StatusOK, result)
