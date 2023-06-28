@@ -44,6 +44,56 @@ Test with `Postman` using the following command: `http://127.0.0.1:8080/add` wit
 }
 ```
 
+Anticipate a response of:
+
+```json
+{
+  "Sum": "3"
+}
+```
+
+## Adding new Hertz server
+There is no need to create a new `Hertz` server and we strongly recommend that you do not. **BUT** if you still want to, follow the instructions below:
+
+Create an `IDL` file e.g.:<br>
+- Ensure that you follow these [standards](https://www.cloudwego.io/docs/kitex/tutorials/advanced-feature/generic-call/thrift_idl_annotation_standards/).
+
+```thrift
+namespace go api
+
+struct AdditionRequest {
+    1: required string FirstNum (api.body="FirstNum");
+    2: required string SecondNum (api.body="SecondNum")
+}
+
+struct AdditionResponse {
+    1: string Sum;
+}
+
+service AdditionApi {
+   AdditionResponse addNumbers(1: AdditionRequest req) (api.post="/add");
+}
+```
+
+Save the `IDL` file in the `/thrift-idl` directory.
+
+In the `hertz-http-server` directory, run:
+
+```shell
+hz new -idl ../thrift-idl/[YOUR_IDL_FILE].thrift
+
+go mod init
+
+go mod edit -replace github.com/apache/thrift=github.com/apache/thrift@v0.13.0
+
+go mod tidy
+```
+
+Update your logic in `biz/handler/api/[YOUR_IDL_FILE].go`.
+
+## Adding new Kitex Server 
+
+
 
 
 
