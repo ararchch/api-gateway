@@ -30,7 +30,7 @@ Before running the project, make sure you install the following, <br>
 
 Make sure `etcd` is running.
 
-Instructions [here](https://etcd.io/docs/v3.5/quickstart/) for `Mac` users. If your machine is running on `Windows`, unzip the folder and run the `etcd` application in the folder.
+- Instructions [here](https://etcd.io/docs/v3.5/quickstart/) for `Mac` users. If your machine is running on `Windows`, unzip the folder and run the `etcd` application in the folder.
 
 In the `hertz-http-server` directory, run `go run .` in the terminal.
 
