@@ -4,7 +4,7 @@ An API Gateway written in `GO` that uses CloudWeGo `Kitex` and `Hertz` framework
 
 ## Tech Design
 
-[Link](https://drive.google.com/file/d/12YdO1ZMxGWcnbM7dVHZ8ZAMn8eJMTPbL/view?usp=drive_link) 
+[Tech Design Link](https://drive.google.com/file/d/12YdO1ZMxGWcnbM7dVHZ8ZAMn8eJMTPbL/view?usp=drive_link) 
 
 ## API Gateway Design Diagram
 INSERT DIAGRAM HERE 
@@ -78,7 +78,7 @@ service AdditionApi {
 
 Save the `IDL` file in the `/thrift-idl` directory.
 
-In the `hertz-http-server` directory, run:
+In the `hertz-http-server` directory, run in the terminal:
 
 ```shell
 hz new -idl ../thrift-idl/[YOUR_IDL_FILE].thrift
@@ -116,7 +116,7 @@ service AdditionManagement {
 
 Save the `IDL` file in the `/thrift-idl` directory.
 
-In the `addition-service` directory, run:
+In the `addition-service` directory, run in the terminal:
 
 ```shell
 kitex kitex -module "your_module_name" -service "service_name" [YOUR_IDL_FILE].thrift
