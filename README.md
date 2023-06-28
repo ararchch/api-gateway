@@ -28,7 +28,8 @@ Before running the project, make sure you install the following, <br>
 
 ## Instructions to run the API Gateway
 
-Make sure `etcd` is running.<br> 
+Make sure `etcd` is running.
+
 Instructions [here](https://etcd.io/docs/v3.5/quickstart/) for `Mac` users. If your machine is running on `Windows`, unzip the folder and run the `etcd` application in the folder.
 
 In the `hertz-http-server` directory, run `go run .` in the terminal.
@@ -92,6 +93,23 @@ go mod tidy
 Update your logic in `biz/handler/api/[YOUR_IDL_FILE].go`.
 
 ## Adding new Kitex Server 
+
+Create an `IDL` file (Instructions above)
+
+In the `addition-service` directory, run:
+
+```shell
+kitex kitex -module "your_module_name" -service "service_name" [YOUR_IDL_FILE].thrift
+
+go mod init
+
+go mod edit -replace github.com/apache/thrift=github.com/apache/thrift@v0.13.0
+
+go mod tidy
+```
+
+Update your logic in `handler.go`.
+
 
 
 
