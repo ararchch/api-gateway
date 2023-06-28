@@ -94,7 +94,27 @@ Update your logic in `biz/handler/api/[YOUR_IDL_FILE].go`.
 
 ## Adding new Kitex Server 
 
-Create an `IDL` file (Instructions above)
+Create an `IDL` file e.g.<br>
+- Ensure that you follow these [standards](https://www.cloudwego.io/docs/kitex/tutorials/advanced-feature/generic-call/thrift_idl_annotation_standards/).
+
+```thrift
+namespace go addition.management
+
+struct AdditionRequest {
+    1: required string FirstNum;
+    2: required string SecondNum;
+}
+
+struct AdditionResponse {
+    1: string Sum;
+}
+
+service AdditionManagement {
+    AdditionResponse addNumbers(1: AdditionRequest req);
+}
+```
+
+Save the `IDL` file in the `/thrift-idl` directory.
 
 In the `addition-service` directory, run:
 
