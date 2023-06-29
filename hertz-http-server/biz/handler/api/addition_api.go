@@ -12,6 +12,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/cloudwego/kitex/client/genericclient"
 	"github.com/cloudwego/kitex/pkg/generic"
+	"github.com/cloudwego/kitex/pkg/loadbalance"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	kitexClient "github.com/cloudwego/kitex/client"
 )
@@ -23,6 +24,9 @@ func AddNumbers(ctx context.Context, c *app.RequestContext) {
 	// inital declarations
 	var err error
 	var req api.AdditionRequest
+
+	// initating loadbalancer
+	lb := loadbalance.NewWeightedBalancer()
 
 	// initating etcs resolver (for service discovery)
 	r, err := etcd.NewEtcdResolver([]string{"127.0.0.1:2379"})
@@ -43,7 +47,12 @@ func AddNumbers(ctx context.Context, c *app.RequestContext) {
 	}
 
 	// create new generic client
-	client, err := genericclient.NewClient("Addition", g, kitexClient.WithResolver(r))
+	client, err := genericclient.NewClient(
+		"Addition", 
+		g, 
+		kitexClient.WithResolver(r), 
+		kitexClient.WithLoadBalancer(lb),
+	)
 	if err != nil {
 		panic(err)
 	}
