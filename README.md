@@ -7,7 +7,7 @@ An API Gateway written in `GO` that uses CloudWeGo `Kitex` and `Hertz` framework
 [Tech Design Link](https://drive.google.com/file/d/12YdO1ZMxGWcnbM7dVHZ8ZAMn8eJMTPbL/view?usp=drive_link) 
 
 ## API Gateway Design Diagram
-INSERT DIAGRAM HERE 
+![API Gateway Diagram](API-Diagram.png)
 
 ## How it works
 
@@ -129,10 +129,3 @@ go mod tidy
 ```
 
 Update your logic in `handler.go`.
-
-
-
-
-
-
-
