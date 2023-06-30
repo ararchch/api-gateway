@@ -53,79 +53,177 @@ Anticipate a response of:
 }
 ```
 
-## Adding new Hertz server
-There is no need to create a new `Hertz` server and we strongly recommend that you do not. **BUT** if you still want to, follow the instructions below:
+## Creating a new microservice and integrating it on the API Gateway
 
-Create an `IDL` file e.g.:<br>
-- Ensure that you follow these [standards](https://www.cloudwego.io/docs/kitex/tutorials/advanced-feature/generic-call/thrift_idl_annotation_standards/).
+- The `hertz-http-server` folder contains the code for accepting `HTTP` requests and the primary business code for the API gateway implementation.
 
-```thrift
-namespace go api
+- The `utils` folder contains the file `utils.go`, which offers a number of useful functions to assist developers with using our API gateway.
 
-struct AdditionRequest {
-    1: required string FirstNum (api.body="FirstNum");
-    2: required string SecondNum (api.body="SecondNum")
-}
+- The `thrift-idl` folder contains thrift Interface Definition Language files. These files are used to generate the infrastructure code for the `Hertz` `HTTP` server as well as any microservices that are developed.
 
-struct AdditionResponse {
-    1: string Sum;
-}
+- The `addition-service` and `multiplication-service` folders contain the code for addition and multiplication RPC servers i.e. addition and multiplication microservices.<br>
+These are not part of the gateway itself and are more like examples of how you can use it. Now we will be implementing a third service - `division-service` - to show how easy it is to build a new microservice and add it to integrate it with existing microservice infrastructure using our API gateway.
 
-service AdditionApi {
-   AdditionResponse addNumbers(1: AdditionRequest req) (api.post="/add");
-}
-```
+- Before following the steps below, clone our repository onto your local computer and make sure you are in the root directory (with the `go.mod` file)
 
-Save the `IDL` file in the `/thrift-idl` directory.
 
-In the `hertz-http-server` directory, run in the terminal:
-
-```shell
-hz new -idl ../thrift-idl/[YOUR_IDL_FILE].thrift
-
-go mod init
-
-go mod edit -replace github.com/apache/thrift=github.com/apache/thrift@v0.13.0
-
-go mod tidy
-```
-
-Update your logic in `biz/handler/api/[YOUR_IDL_FILE].go`.
-
-## Adding new Kitex Server 
+## Creating a new RPC server
 
 Create an `IDL` file e.g.<br>
 - Ensure that you follow these [standards](https://www.cloudwego.io/docs/kitex/tutorials/advanced-feature/generic-call/thrift_idl_annotation_standards/).
 
 ```thrift
-namespace go addition.management
+// tells thrift to generate scaffolding code in ‘Go’ in the   subdirectory kitex_gen/division/api
+namespace go division.api  
 
-struct AdditionRequest {
-    1: required string FirstNum;
-    2: required string SecondNum;
-}
+// creates a new struct ‘Division request’ with the above implementation
+struct DivisionRequest {
+1: required string FirstNum;
+2: required string SecondNum;
+} 
 
-struct AdditionResponse {
-    1: string Sum;
-}
+// creates a new struct ‘Division Response’ with the above implementation
+struct DivisionResponse {
+1: string Quotient;
+} 
 
-service AdditionManagement {
-    AdditionResponse addNumbers(1: AdditionRequest req);
-}
+// Defines the service name and the method signature of the divideNumbers method offerred by the service
+service DivisionManagement {
+DivisionResponse divideNumbers(1: DivisionRequest req);
+} 
 ```
 
 Save the `IDL` file in the `/thrift-idl` directory.
 
-In the `addition-service` directory, run in the terminal:
+Create a new directory called `division-service` that will contain the `Kitex` code for this service. 
+
+Then run the following command to tell `Kitex` to generate the code using your new `thrift IDL` file:
 
 ```shell
-kitex kitex -module "your_module_name" -service "service_name" [YOUR_IDL_FILE].thrift
+kitex -module github.com/ararchch/api-gateway -service Division ../thrift-idl/division_management.thrift
 
-go mod init
-
-go mod edit -replace github.com/apache/thrift=github.com/apache/thrift@v0.13.0
-
-go mod tidy
 ```
 
-Update your logic in `handler.go`.
+Update your logic in `handler.go` e.g.
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"strconv"
+
+	api "github.com/ararchch/api-gateway/division-service/kitex_gen/division/api"
+)
+
+// DivisionManagementImpl implements the last service interface defined in the IDL.
+type DivisionManagementImpl struct{}
+
+// DivideNumbers implements the DivisionManagementImpl interface.
+func (s *DivisionManagementImpl) DivideNumbers(ctx context.Context, req *api.DivisionRequest) (resp *api.DivisionResponse, err error) {
+	
+	// parse int from string of First Number
+	firstNumInt, err := strconv.Atoi(req.FirstNum)
+	if err != nil {
+		panic(err)
+	}
+
+	// parse int from string of Second Number
+	secondNumInt, err := strconv.Atoi(req.SecondNum)
+	if err != nil {
+		panic(err)
+	}
+
+	// divide two numbers 
+	finalQuotient := firstNumInt / secondNumInt;
+
+	// convert finalSum to string and return response of type DivisionResponse and error = nil
+	return &api.DivisionResponse{
+		Quotient: fmt.Sprintf("%d", finalQuotient),
+	}, nil
+
+}
+```
+
+Navigate to `main.go` in the `division-service` folder, and add the following code;
+
+```go
+package main
+
+import (
+	"log"
+
+	api "github.com/ararchch/api-gateway/division-service/kitex_gen/division/api/divisionmanagement"
+	"github.com/cloudwego/kitex/pkg/rpcinfo"
+	"github.com/cloudwego/kitex/server"
+	etcd "github.com/kitex-contrib/registry-etcd"
+)
+
+func main() {
+	// initate new etcd registry at port 2379
+	r, err := etcd.NewEtcdRegistry([]string{"127.0.0.1:2379"})
+    if err != nil {
+        log.Fatal(err)
+	}
+	
+	// create new Kitex server for Division Service
+	svr := api.NewServer(
+		new(DivisionManagementImpl), // Follow DivisionManagementImpl as defined in ./handler.go
+		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: "Division"}),  // allow service to be discovered with name: "Division"
+		server.WithRegistry(r), // register service on etcd registry 'r' (as declared earlier)
+	)
+
+	// run server and handler any errors
+	if err := svr.Run(); err != nil {
+		log.Println(err.Error())
+	}
+}
+```
+
+Navigate to `thrift-idl/gateway_api` and add the following code;
+
+```go
+namespace go api
+
+struct AdditionRequest {
+1: required string FirstNum (api.body="FirstNum");
+2: required string SecondNum (api.body="SecondNum")
+}
+
+struct AdditionResponse {
+1: string Sum;
+}
+
+struct MultiplicationRequest {
+1: required string FirstNum (api.body="FirstNum");
+2: required string SecondNum (api.body="SecondNum")
+}
+
+struct MultiplicationResponse {
+1: string Product;
+}
+
+struct DivisionRequest {
+1: required string FirstNum (api.body="FirstNum");
+2: required string SecondNum (api.body="SecondNum")
+}
+
+struct DivisionResponse {
+1: string Quotient;
+}
+
+service Gateway {
+AdditionResponse addNumbers(1: AdditionRequest req) (api.post="/add");
+MultiplicationResponse multiplyNumbers(1: MultiplicationRequest req) (api.post="/multiply");
+DivisionResponse divideNumbers(1: DivisionRequest req) (api.post="/divide");
+}
+```
+
+Navigate into `hertz-http-request` and run in the terminal;
+
+```shell
+hz update -idl ../thrift-idl/gateway_api.thrift
+```
+
+Navigate to `./biz/handler/api/gateway.go`
