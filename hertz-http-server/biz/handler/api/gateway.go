@@ -5,10 +5,10 @@ package api
 import (
 	"context"
 
-	additionService "github.com/ararchch/api-gateway/addition-service/kitex_gen/addition/management"
-	divisionService "github.com/ararchch/api-gateway/division-service/kitex_gen/division/api"
+	additionService "github.com/ararchch/api-gateway/microservices/addition-service/kitex_gen/addition/management"
+	divisionService "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/api"
 	api "github.com/ararchch/api-gateway/hertz-http-server/biz/model/api"
-	multiplicationService "github.com/ararchch/api-gateway/multiplication-service/kitex_gen/multiplication/management"
+	multiplicationService "github.com/ararchch/api-gateway/microservices/multiplication-service/kitex_gen/multiplication/management"
 	"github.com/ararchch/api-gateway/utils"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"

@@ -114,7 +114,7 @@ import (
 	"fmt"
 	"strconv"
 
-	api "github.com/ararchch/api-gateway/division-service/kitex_gen/division/api"
+	api "github.com/ararchch/microservices/api-gateway/division-service/kitex_gen/division/api"
 )
 
 // DivisionManagementImpl implements the last service interface defined in the IDL.
@@ -154,7 +154,7 @@ package main
 import (
 	"log"
 
-	api "github.com/ararchch/api-gateway/division-service/kitex_gen/division/api/divisionmanagement"
+	api "github.com/ararchch/microservices/api-gateway/division-service/kitex_gen/division/api/divisionmanagement"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
 	etcd "github.com/kitex-contrib/registry-etcd"
