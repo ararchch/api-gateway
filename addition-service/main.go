@@ -2,11 +2,12 @@ package main
 
 import (
 	"log"
+	"net"
 
 	management "github.com/ararchch/api-gateway/addition-service/kitex_gen/addition/management/additionmanagement"
-	etcd "github.com/kitex-contrib/registry-etcd"
-	"github.com/cloudwego/kitex/server"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
+	"github.com/cloudwego/kitex/server"
+	etcd "github.com/kitex-contrib/registry-etcd"
 )
 
 func main() {
@@ -22,6 +23,7 @@ func main() {
 		new(AdditionManagementImpl), // Follow AdditionManagementImpl as defined in ./handler.go
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: "Addition"}),  // allow service to be discovered with name: "Addition"
 		server.WithRegistry(r), // register service on etcd registry 'r' (as declared earlier)
+		server.WithServiceAddr(&net.TCPAddr{Port: 8889}),
 	)
 
 	// run server and handler any errors

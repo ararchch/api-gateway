@@ -61,7 +61,7 @@ func jsonStringify(item any) (string, error) {
 	return string(jsonForm), nil
 }
 
-func MakeRpcRequest(ctx context.Context, kitexClient genericclient.Client, methodName string, request *interface{}, response *interface{}) (error) {
+func MakeRpcRequest(ctx context.Context, kitexClient genericclient.Client, methodName string, request interface{}, response interface{}) (error) {
 	stringedReq, err := jsonStringify(request)
 	if err != nil {
 		panic(err)
