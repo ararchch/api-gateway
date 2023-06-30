@@ -4,7 +4,7 @@ package divisionmanagement
 
 import (
 	"context"
-	api "github.com/ararchch/microservices/api-gateway/division-service/kitex_gen/division/api"
+	api "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/api"
 	client "github.com/cloudwego/kitex/client"
 	callopt "github.com/cloudwego/kitex/client/callopt"
 )
