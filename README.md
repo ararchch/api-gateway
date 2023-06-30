@@ -67,7 +67,7 @@ These are not part of the gateway itself and are more like examples of how you c
 - Before following the steps below, clone our repository onto your local computer and make sure you are in the root directory (with the `go.mod` file)
 
 
-## Creating a new RPC server
+## Creating a new RPC server (Division Service)
 
 Create an `IDL` file e.g.<br>
 - Ensure that you follow these [standards](https://www.cloudwego.io/docs/kitex/tutorials/advanced-feature/generic-call/thrift_idl_annotation_standards/).
@@ -104,7 +104,7 @@ kitex -module github.com/ararchch/api-gateway -service Division ../thrift-idl/di
 
 ```
 
-Update your logic in `handler.go` e.g.
+Update your logic in `handler.go` with the following code;
 
 ```go
 package main
@@ -180,6 +180,7 @@ func main() {
 	}
 }
 ```
+### Integrating Service into API Gateway
 
 Navigate to `thrift-idl/gateway_api` and add the following code;
 
@@ -227,3 +228,46 @@ hz update -idl ../thrift-idl/gateway_api.thrift
 ```
 
 Navigate to `./biz/handler/api/gateway.go`
+
+Implement `DivideNumbers` method in the file as follows; 
+
+```go
+func DivideNumbers(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req api.DivisionRequest
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	// create new client (with loadbalancing, service discovery capabilities) using utils.GenerateClient feature
+	divisionClient, err := utils.GenerateClient("Division")
+	if err != nil {
+		panic(err)
+	}
+
+	// binding req params to RPC reqest struct (following the request format declared in RPC service IDL)
+	reqRpc := &divisionService.DivisionRequest{
+		FirstNum:  req.FirstNum,
+		SecondNum: req.SecondNum,
+	}
+
+	var respRpc api.DivisionResponse
+
+	// calling MakeRpcRequest method declared in the utils package
+	err = utils.MakeRpcRequest(ctx, divisionClient, "divideNumbers", reqRpc, &respRpc)
+	if err != nil {
+		panic(err)
+	}
+
+	resp := &api.DivisionResponse{
+		Quotient: respRpc.Quotient,
+	}
+
+	// return to client as JSON HTTP response
+	c.JSON(consts.StatusOK, resp)
+}
+```
+
+Now you are done with editing the API Gateway! Thank you! **:)**
