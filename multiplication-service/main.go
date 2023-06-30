@@ -18,10 +18,10 @@ func main() {
         log.Fatal(err)
     }
 
-	// create new Kitex server for Addition Service
+	// create new Kitex server for Multiplication Service
 	svr := management.NewServer(
-		new(MultiplicationManagementImpl), // Follow AdditionManagementImpl as defined in ./handler.go
-		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: "Multiplication"}),  // allow service to be discovered with name: "Addition"
+		new(MultiplicationManagementImpl), // Follow MultiplicationManagementImpl as defined in ./handler.go
+		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: "Multiplication"}),  // allow service to be discovered with name: "Multiplication"
 		server.WithRegistry(r), // register service on etcd registry 'r' (as declared earlier)
 	)
 

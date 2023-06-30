@@ -29,7 +29,7 @@ func (s *MultiplicationManagementImpl) MultiplyNumbers(ctx context.Context, req 
 	// multiply two numbers together
 	finalProduct := firstNumInt * secondNumInt
 
-	// convert finalSum to string and return response of type AdditionResponse and error = nil
+	// convert finalSum to string and return response of type MultiplicationResponse and error = nil
 	return &management.MultiplicationResponse{
 		Product: fmt.Sprintf("%d", finalProduct),
 	}, nil
