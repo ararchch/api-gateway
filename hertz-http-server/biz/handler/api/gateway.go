@@ -6,8 +6,9 @@ import (
 	"context"
 
 	additionService "github.com/ararchch/api-gateway/addition-service/kitex_gen/addition/management"
-	multiplicationService "github.com/ararchch/api-gateway/multiplication-service/kitex_gen/multiplication/management"
+	divisionService "github.com/ararchch/api-gateway/division-service/kitex_gen/division/api"
 	api "github.com/ararchch/api-gateway/hertz-http-server/biz/model/api"
+	multiplicationService "github.com/ararchch/api-gateway/multiplication-service/kitex_gen/multiplication/management"
 	"github.com/ararchch/api-gateway/utils"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
@@ -16,11 +17,11 @@ import (
 // AddNumbers .
 // @router /add [POST]
 func AddNumbers(ctx context.Context, c *app.RequestContext) {
-	
+
 	// inital declarations (pre-generated)
 	var err error
 	var req api.AdditionRequest
-	
+
 	// bind error params to req (pre-generated)
 	err = c.BindAndValidate(&req)
 	if err != nil {
@@ -93,6 +94,45 @@ func MultiplyNumbers(ctx context.Context, c *app.RequestContext) {
 	// initating and repackaging RPC response into new HTTP AdditionResponse
 	resp := &api.MultiplicationResponse{
 		Product: respRpc.Product,
+	}
+
+	// return to client as JSON HTTP response
+	c.JSON(consts.StatusOK, resp)
+}
+
+// DivideNumbers .
+// @router /divide [POST]
+func DivideNumbers(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req api.DivisionRequest
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	// create new client (with loadbalancing, service discovery capabilities) using utils.GenerateClient feature
+	divisionClient, err := utils.GenerateClient("Division")
+	if err != nil {
+		panic(err)
+	}
+
+	// binding req params to RPC reqest struct (following the request format declared in RPC service IDL)
+	reqRpc := &divisionService.DivisionRequest{
+		FirstNum:  req.FirstNum,
+		SecondNum: req.SecondNum,
+	}
+
+	var respRpc api.DivisionResponse
+
+	// calling MakeRpcRequest method declared in the utils package
+	err = utils.MakeRpcRequest(ctx, divisionClient, "divideNumbers", reqRpc, &respRpc)
+	if err != nil {
+		panic(err)
+	}
+
+	resp := &api.DivisionResponse{
+		Quotient: respRpc.Quotient,
 	}
 
 	// return to client as JSON HTTP response
