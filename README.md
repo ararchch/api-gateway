@@ -40,8 +40,8 @@ Test with `Postman` using the following command: `http://127.0.0.1:8080/add` wit
 
 ```json
 {
-  "firstnum" : "1",
-  "secondnum" : "2"
+  "FirstNum" : "1",
+  "SecondNum" : "2"
 }
 ```
 
