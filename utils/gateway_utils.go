@@ -77,3 +77,7 @@ func MakeRpcRequest(ctx context.Context, kitexClient genericclient.Client, metho
 
 	return nil
 }
+
+func RunAllServices(){
+	
+}
