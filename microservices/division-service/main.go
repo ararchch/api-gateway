@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net"
 
 	api "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/api/divisionmanagement"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
@@ -12,12 +11,17 @@ import (
 
 func main() {
 
+	address, err := utils.GetUnusedPort("localhost")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// create new Kitex server for Division Service
 	svr := api.NewServer(
 		new(DivisionManagementImpl), // Follow DivisionManagementImpl as defined in ./handler.go
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: "Division"}),  // allow service to be discovered with name: "Division"
 		server.WithRegistry(utils.ETCDRegistry), // register service on etcd registry 'r' (as declared earlier),
-		server.WithServiceAddr(&net.TCPAddr{Port: 8890}),
+		server.WithServiceAddr(address),
 	)
 
 	// run server and handler any errors

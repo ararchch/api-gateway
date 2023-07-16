@@ -11,11 +11,18 @@ import (
 )
 
 func main() {
+
+	address, err := utils.GetUnusedPort("localhost")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// create new Kitex server for Multiplication Service
 	svr := management.NewServer(
 		new(MultiplicationManagementImpl), // Follow MultiplicationManagementImpl as defined in ./handler.go
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: "Multiplication"}),  // allow service to be discovered with name: "Multiplication"
 		server.WithRegistry(utils.ETCDRegistry), // register service on etcd registry 'r' (as declared earlier)
+		server.WithServiceAddr(address),
 	)
 
 	// run server and handler any errors
