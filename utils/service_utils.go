@@ -6,6 +6,7 @@ import (
 	"net"
 	"sync"
 
+	"github.com/cloudwego/kitex/pkg/limit"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/pkg/serviceinfo"
 	"github.com/cloudwego/kitex/server"
@@ -67,4 +68,8 @@ func RunServers(servers []*server.Server) {
 	}
 
 	wg.Wait()
+}
+
+func RateLimit(connections int, qps int) server.Option {
+	return server.WithLimit(&limit.Option{MaxConnections: connections, MaxQPS: qps})
 }
