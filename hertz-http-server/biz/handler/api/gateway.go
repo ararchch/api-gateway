@@ -30,7 +30,7 @@ func AddNumbers(ctx context.Context, c *app.RequestContext) {
 	}
 
 	// create new client (with loadbalancing, service discovery capabilities) using utils.GenerateClient feature
-	additionClient, err := utils.GenerateClient("Addition")
+	additionClient, err := utils.GenerateClient("Addition", utils.RpcTimeout(3000), utils.ConnectionTimeout(500))
 	if err != nil {
 		panic(err)
 	}
@@ -71,7 +71,7 @@ func MultiplyNumbers(ctx context.Context, c *app.RequestContext) {
 	}
 
 	// create new client (with loadbalancing, service discovery capabilities) using utils.GenerateClient feature
-	multiplicationClient, err := utils.GenerateClient("Multiplication")
+	multiplicationClient, err := utils.GenerateClient("Multiplication", utils.RpcTimeout(3000), utils.ConnectionTimeout(500))
 	if err != nil {
 		panic(err)
 	}
@@ -112,7 +112,7 @@ func DivideNumbers(ctx context.Context, c *app.RequestContext) {
 	}
 
 	// create new client (with loadbalancing, service discovery capabilities) using utils.GenerateClient feature
-	divisionClient, err := utils.GenerateClient("Division")
+	divisionClient, err := utils.GenerateClient("Division", utils.RpcTimeout(3000), utils.ConnectionTimeout(500))
 	if err != nil {
 		panic(err)
 	}
@@ -126,7 +126,7 @@ func DivideNumbers(ctx context.Context, c *app.RequestContext) {
 	var respRpc api.DivisionResponse
 
 	// calling MakeRpcRequest method declared in the utils package
-	err = utils.MakeRpcRequest(ctx, divisionClient, "divideNumbers", reqRpc, &respRpc)
+	err = utils.MakeRpcRequestWithRetry(ctx, divisionClient, "divideNumbers", reqRpc, &respRpc, 3)
 	if err != nil {
 		panic(err)
 	}

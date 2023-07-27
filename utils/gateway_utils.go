@@ -11,7 +11,7 @@ import (
 	etcd "github.com/kitex-contrib/registry-etcd"
 )
 
-func GenerateClient(serviceName string) (genericclient.Client, error){
+func GenerateClient(serviceName string, opts ...kitexClient.Option) (genericclient.Client, error){
 
 	// inital declarations
 	var err error
@@ -37,12 +37,18 @@ func GenerateClient(serviceName string) (genericclient.Client, error){
 		panic(err)
 	}
 
+	var options []kitexClient.Option
+	options = append(options,
+		kitexClient.WithResolver(r),
+		kitexClient.WithLoadBalancer(lb),
+	)
+	options = append(options, opts...)
+
 	// create new generic client
 	client, err := genericclient.NewClient(
 		serviceName,
 		g,
-		kitexClient.WithResolver(r),
-		kitexClient.WithLoadBalancer(lb),
+		options...
 	)
 	if err != nil {
 		panic(err)
