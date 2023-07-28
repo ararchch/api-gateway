@@ -4,7 +4,7 @@ An API Gateway written in `GO` that uses CloudWeGo `Kitex` and `Hertz` framework
 
 ## Tech Design
 
-[Tech Design Link](https://drive.google.com/file/d/1guiZxHbMgkmHLFn2DxIcptSoMvI5CdSa/view?usp=drive_link) 
+[Tech Design Link](https://array-api-gateway.notion.site/Project-README-Milestone-3-c7df8b1dfe444b1c98e0cc0a2b53c55c) 
 
 ## API Gateway Design Diagram
 ![API Gateway Diagram](API-Diagram.png)
@@ -19,8 +19,8 @@ An API Gateway written in `GO` that uses CloudWeGo `Kitex` and `Hertz` framework
 6. The API gateway will process and encode the response as an HTTP Response.
 
 ## Testing
-1. For load testing and benchmarking analysis, please refer to [ReadMe](Locust/README.md)
-2. For unit testing, please refer to [ReadMe](Script-testing/README.MD)
+1. For load testing and benchmarking analysis, please refer to [ReadMe](Locust)
+2. For unit testing, please refer to [ReadMe](Script-testing)
 
 ## Installation
 
