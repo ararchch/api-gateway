@@ -4,7 +4,7 @@ package divisionmanagement
 
 import (
 	"context"
-	api "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/api"
+	management "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/management"
 	client "github.com/cloudwego/kitex/client"
 	kitex "github.com/cloudwego/kitex/pkg/serviceinfo"
 )
@@ -17,12 +17,12 @@ var divisionManagementServiceInfo = NewServiceInfo()
 
 func NewServiceInfo() *kitex.ServiceInfo {
 	serviceName := "DivisionManagement"
-	handlerType := (*api.DivisionManagement)(nil)
+	handlerType := (*management.DivisionManagement)(nil)
 	methods := map[string]kitex.MethodInfo{
 		"divideNumbers": kitex.NewMethodInfo(divideNumbersHandler, newDivisionManagementDivideNumbersArgs, newDivisionManagementDivideNumbersResult, false),
 	}
 	extra := map[string]interface{}{
-		"PackageName": "api",
+		"PackageName": "management",
 	}
 	svcInfo := &kitex.ServiceInfo{
 		ServiceName:     serviceName,
@@ -36,9 +36,9 @@ func NewServiceInfo() *kitex.ServiceInfo {
 }
 
 func divideNumbersHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	realArg := arg.(*api.DivisionManagementDivideNumbersArgs)
-	realResult := result.(*api.DivisionManagementDivideNumbersResult)
-	success, err := handler.(api.DivisionManagement).DivideNumbers(ctx, realArg.Req)
+	realArg := arg.(*management.DivisionManagementDivideNumbersArgs)
+	realResult := result.(*management.DivisionManagementDivideNumbersResult)
+	success, err := handler.(management.DivisionManagement).DivideNumbers(ctx, realArg.Req)
 	if err != nil {
 		return err
 	}
@@ -46,11 +46,11 @@ func divideNumbersHandler(ctx context.Context, handler interface{}, arg, result 
 	return nil
 }
 func newDivisionManagementDivideNumbersArgs() interface{} {
-	return api.NewDivisionManagementDivideNumbersArgs()
+	return management.NewDivisionManagementDivideNumbersArgs()
 }
 
 func newDivisionManagementDivideNumbersResult() interface{} {
-	return api.NewDivisionManagementDivideNumbersResult()
+	return management.NewDivisionManagementDivideNumbersResult()
 }
 
 type kClient struct {
@@ -63,10 +63,10 @@ func newServiceClient(c client.Client) *kClient {
 	}
 }
 
-func (p *kClient) DivideNumbers(ctx context.Context, req *api.DivisionRequest) (r *api.DivisionResponse, err error) {
-	var _args api.DivisionManagementDivideNumbersArgs
+func (p *kClient) DivideNumbers(ctx context.Context, req *management.DivisionRequest) (r *management.DivisionResponse, err error) {
+	var _args management.DivisionManagementDivideNumbersArgs
 	_args.Req = req
-	var _result api.DivisionManagementDivideNumbersResult
+	var _result management.DivisionManagementDivideNumbersResult
 	if err = p.c.Call(ctx, "divideNumbers", &_args, &_result); err != nil {
 		return
 	}

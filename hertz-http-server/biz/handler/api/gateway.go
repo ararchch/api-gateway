@@ -6,7 +6,7 @@ import (
 	"context"
 
 	additionService "github.com/ararchch/api-gateway/microservices/addition-service/kitex_gen/addition/management"
-	divisionService "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/api"
+	divisionService "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/management"
 	api "github.com/ararchch/api-gateway/hertz-http-server/biz/model/api"
 	multiplicationService "github.com/ararchch/api-gateway/microservices/multiplication-service/kitex_gen/multiplication/management"
 	"github.com/ararchch/api-gateway/utils"
@@ -125,7 +125,7 @@ func DivideNumbers(ctx context.Context, c *app.RequestContext) {
 
 	var respRpc api.DivisionResponse
 
-	// calling MakeRpcRequest method declared in the utils package
+	// calling MakeRpcRequestWithRetry method declared in the utils package
 	err = utils.MakeRpcRequestWithRetry(ctx, divisionClient, "divideNumbers", reqRpc, &respRpc, 3)
 	if err != nil {
 		panic(err)

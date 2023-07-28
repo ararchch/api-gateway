@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"strconv"
 
-	api "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/api"
+	management "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/management"
 )
 
 // DivisionManagementImpl implements the last service interface defined in the IDL.
 type DivisionManagementImpl struct{}
 
 // DivideNumbers implements the DivisionManagementImpl interface.
-func (s *DivisionManagementImpl) DivideNumbers(ctx context.Context, req *api.DivisionRequest) (resp *api.DivisionResponse, err error) {
+func (s *DivisionManagementImpl) DivideNumbers(ctx context.Context, req *management.DivisionRequest) (resp *management.DivisionResponse, err error) {
 	
 	// parse int from string of First Number
 	firstNumInt, err := strconv.Atoi(req.FirstNum)
@@ -30,7 +30,7 @@ func (s *DivisionManagementImpl) DivideNumbers(ctx context.Context, req *api.Div
 	finalQuotient := firstNumInt / secondNumInt;
 
 	// convert finalSum to string and return response of type DivisionResponse and error = nil
-	return &api.DivisionResponse{
+	return &management.DivisionResponse{
 		Quotient: fmt.Sprintf("%d", finalQuotient),
 	}, nil
 
