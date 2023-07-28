@@ -18,6 +18,10 @@ An API Gateway written in `GO` that uses CloudWeGo `Kitex` and `Hertz` framework
 5. The RPC servers will process the `addition` request and returns the response. <br>
 6. The API gateway will process and encode the response as an HTTP Response.
 
+## Testing
+1. For load testing and benchmarking analysis, please refer to [ReadMe]()
+2. For unit testing, please refer to [ReadMe]()
+
 ## Installation
 
 Before running the project, make sure you install the following, <br>
@@ -74,9 +78,11 @@ These are not part of the gateway itself and are more like examples of how you c
 Create an `IDL` file e.g.<br>
 - Ensure that you follow these [standards](https://www.cloudwego.io/docs/kitex/tutorials/advanced-feature/generic-call/thrift_idl_annotation_standards/).
 
+Navigate to `api-gateway\thrift-idl` folder and create a file called `division_management.thrift` and input the following code. 
+
 ```thrift
 // tells thrift to generate scaffolding code in ‘Go’ in the   subdirectory kitex_gen/division/api
-namespace go division.api  
+namespace go division.management// directories generated will be named following this convention
 
 // creates a new struct ‘Division request’ with the above implementation
 struct DivisionRequest {
@@ -94,19 +100,18 @@ service DivisionManagement {
 DivisionResponse divideNumbers(1: DivisionRequest req);
 } 
 ```
+Next, navigate to `microservice` directory and create a **folder** called `division-service`. At this point, your directory should look like this;
 
-Save the `IDL` file in the `/thrift-idl` directory.
+![Directory-example](directory-example.png)
 
-Create a new directory called `division-service` that will contain the `Kitex` code for this service. 
-
-Then run the following command to tell `Kitex` to generate the code using your new `thrift IDL` file:
+Navigate into the `api-gateway\microservices\division-service` and run the followng command in the terminal
 
 ```shell
 kitex -module github.com/ararchch/api-gateway -service Division ../thrift-idl/division_management.thrift
 
 ```
 
-Update your logic in `handler.go` with the following code;
+Update your logic in `handler.go` in the `division-service` folder with the following code;
 
 ```go
 package main
@@ -116,14 +121,14 @@ import (
 	"fmt"
 	"strconv"
 
-	api "github.com/ararchch/microservices/api-gateway/division-service/kitex_gen/division/api"
+	management "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/management"
 )
 
 // DivisionManagementImpl implements the last service interface defined in the IDL.
 type DivisionManagementImpl struct{}
 
 // DivideNumbers implements the DivisionManagementImpl interface.
-func (s *DivisionManagementImpl) DivideNumbers(ctx context.Context, req *api.DivisionRequest) (resp *api.DivisionResponse, err error) {
+func (s *DivisionManagementImpl) DivideNumbers(ctx context.Context, req *management.DivisionRequest) (resp *management.DivisionResponse, err error) {
 	
 	// parse int from string of First Number
 	firstNumInt, err := strconv.Atoi(req.FirstNum)
@@ -141,7 +146,7 @@ func (s *DivisionManagementImpl) DivideNumbers(ctx context.Context, req *api.Div
 	finalQuotient := firstNumInt / secondNumInt;
 
 	// convert finalSum to string and return response of type DivisionResponse and error = nil
-	return &api.DivisionResponse{
+	return &management.DivisionResponse{
 		Quotient: fmt.Sprintf("%d", finalQuotient),
 	}, nil
 
@@ -174,7 +179,7 @@ func main() {
 ```
 ### Integrating Service into API Gateway
 
-Navigate to `thrift-idl/gateway_api` and add the following code;
+Navigate to `api-gateway\thrift-idl` and open the `gateway_api.thrift` and add the following code;
 
 ```go
 namespace go api
@@ -197,11 +202,13 @@ struct MultiplicationResponse {
 1: string Product;
 }
 
-struct DivisionRequest {
+// request structure that the user sends to the gateway
+struct DivisionRequest { 
 1: required string FirstNum (api.body="FirstNum");
 2: required string SecondNum (api.body="SecondNum")
 }
 
+// response structure sent by gateway to the user
 struct DivisionResponse {
 1: string Quotient;
 }
@@ -209,7 +216,7 @@ struct DivisionResponse {
 service Gateway {
 AdditionResponse addNumbers(1: AdditionRequest req) (api.post="/add");
 MultiplicationResponse multiplyNumbers(1: MultiplicationRequest req) (api.post="/multiply");
-DivisionResponse divideNumbers(1: DivisionRequest req) (api.post="/divide");
+DivisionResponse divideNumbers(1: DivisionRequest req) (api.post="/divide"); // endpoint and method details
 }
 ```
 
@@ -219,7 +226,7 @@ Navigate into `hertz-http-request` and run in the terminal;
 hz update -idl ../thrift-idl/gateway_api.thrift
 ```
 
-Navigate to `./biz/handler/api/gateway.go`
+Navigate to `hertz-http-request/biz/handler/api/gateway.go`
 
 Implement `DivideNumbers` method in the file as follows; 
 
@@ -232,7 +239,7 @@ import (
 	"context"
 
 	additionService "github.com/ararchch/api-gateway/microservices/addition-service/kitex_gen/addition/management"
-	divisionService "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/api"
+	divisionService "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/management"
 	api "github.com/ararchch/api-gateway/hertz-http-server/biz/model/api"
 	multiplicationService "github.com/ararchch/api-gateway/microservices/multiplication-service/kitex_gen/multiplication/management"
 	"github.com/ararchch/api-gateway/utils"
@@ -364,10 +371,86 @@ func DivideNumbers(ctx context.Context, c *app.RequestContext) {
 	// return to client as JSON HTTP response
 	c.JSON(consts.StatusOK, resp)
 }
+
+// MultiplyNumbers .
+// @router /multiply [POST]
+func MultiplyNumbers(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req api.MultiplicationRequest
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	// create new client (with loadbalancing, service discovery capabilities) using utils.GenerateClient feature
+	multiplicationClient, err := utils.GenerateClient("Multiplication", utils.RpcTimeout(3000), utils.ConnectionTimeout(500))
+	if err != nil {
+		panic(err)
+	}
+
+	// binding req params to RPC reqest struct (following the request format declared in RPC service IDL)
+	reqRpc := &multiplicationService.MultiplicationRequest{
+		FirstNum:  req.FirstNum,
+		SecondNum: req.SecondNum,
+	}
+
+	// initate new RPC response struct (as declared in RPC service IDL). This response variable will be populated by MakeRpcRequst function
+	var respRpc multiplicationService.MultiplicationResponse
+
+	// calling MakeRpcRequest method declared in the utils package
+	err = utils.MakeRpcRequest(ctx, multiplicationClient, "multiplyNumbers", reqRpc, &respRpc)
+	if err != nil {
+		panic(err)
+	}
+
+	// initating and repackaging RPC response into new HTTP AdditionResponse
+	resp := &api.MultiplicationResponse{
+		Product: respRpc.Product,
+	}
+
+	// return to client as JSON HTTP response
+	c.JSON(consts.StatusOK, resp)
+}
+
+// DivideNumbers .
+// @router /divide [POST]
+func DivideNumbers(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req api.DivisionRequest
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	// create new client (with loadbalancing, service discovery capabilities) using utils.GenerateClient feature
+	divisionClient, err := utils.GenerateClient("Division", utils.RpcTimeout(3000), utils.ConnectionTimeout(500))
+	if err != nil {
+		panic(err)
+	}
+
+	// binding req params to RPC reqest struct (following the request format declared in RPC service IDL)
+	reqRpc := &divisionService.DivisionRequest{
+		FirstNum:  req.FirstNum,
+		SecondNum: req.SecondNum,
+	}
+
+	var respRpc api.DivisionResponse
+
+	// calling MakeRpcRequestWithRetry method declared in the utils package
+	err = utils.MakeRpcRequestWithRetry(ctx, divisionClient, "divideNumbers", reqRpc, &respRpc, 3)
+	if err != nil {
+		panic(err)
+	}
+
+	resp := &api.DivisionResponse{
+		Quotient: respRpc.Quotient,
+	}
+
+	// return to client as JSON HTTP response
+	c.JSON(consts.StatusOK, resp)
+}
 ```
 
 Now you are done with editing the API Gateway! Thank you! **:)**
-
-## Testing
-1. For load testing and benchmarking analysis, please refer to [ReadMe](https://github.com/ararchch/api-gateway/blob/FinalReadMe/Locust/README.md)
-2. For unit testing, please refer to [ReadMe](https://github.com/ararchch/api-gateway/blob/FinalReadMe/Script-testing/README.MD)
