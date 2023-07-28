@@ -20,8 +20,3 @@ func _multiplynumbersMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
-
-func _dividenumbersMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}

@@ -6,7 +6,6 @@ import (
 	"context"
 
 	additionService "github.com/ararchch/api-gateway/microservices/addition-service/kitex_gen/addition/management"
-	divisionService "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/management"
 	api "github.com/ararchch/api-gateway/hertz-http-server/biz/model/api"
 	multiplicationService "github.com/ararchch/api-gateway/microservices/multiplication-service/kitex_gen/multiplication/management"
 	"github.com/ararchch/api-gateway/utils"
@@ -94,45 +93,6 @@ func MultiplyNumbers(ctx context.Context, c *app.RequestContext) {
 	// initating and repackaging RPC response into new HTTP AdditionResponse
 	resp := &api.MultiplicationResponse{
 		Product: respRpc.Product,
-	}
-
-	// return to client as JSON HTTP response
-	c.JSON(consts.StatusOK, resp)
-}
-
-// DivideNumbers .
-// @router /divide [POST]
-func DivideNumbers(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req api.DivisionRequest
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
-		return
-	}
-
-	// create new client (with loadbalancing, service discovery capabilities) using utils.GenerateClient feature
-	divisionClient, err := utils.GenerateClient("Division", utils.RpcTimeout(3000), utils.ConnectionTimeout(500))
-	if err != nil {
-		panic(err)
-	}
-
-	// binding req params to RPC reqest struct (following the request format declared in RPC service IDL)
-	reqRpc := &divisionService.DivisionRequest{
-		FirstNum:  req.FirstNum,
-		SecondNum: req.SecondNum,
-	}
-
-	var respRpc api.DivisionResponse
-
-	// calling MakeRpcRequestWithRetry method declared in the utils package
-	err = utils.MakeRpcRequestWithRetry(ctx, divisionClient, "divideNumbers", reqRpc, &respRpc, 3)
-	if err != nil {
-		panic(err)
-	}
-
-	resp := &api.DivisionResponse{
-		Quotient: respRpc.Quotient,
 	}
 
 	// return to client as JSON HTTP response
