@@ -34,6 +34,8 @@ Before running the project, make sure you install the following, <br>
 
 ## Instructions to run the API Gateway
 
+You can follow the instructions below or view this instructional [video](https://drive.google.com/file/d/11TkbHvjIoSWAt_u-J9h3dy4Ev9bdOI9R/view?usp=drive_link)
+
 Make sure `etcd` is running.
 
 - Instructions [here](https://etcd.io/docs/v3.5/quickstart/) for `Mac` users. If your machine is running on `Windows`, unzip the folder and run the `etcd` application in the folder.
