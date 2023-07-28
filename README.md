@@ -369,5 +369,5 @@ func DivideNumbers(ctx context.Context, c *app.RequestContext) {
 Now you are done with editing the API Gateway! Thank you! **:)**
 
 ## Testing
-1. For load testing and benchmarking analysis, please refer to [ReadMe]()
-2. For unit testing, please refer to [ReadMe]()
+1. For load testing and benchmarking analysis, please refer to [ReadMe](Locust\README.md)
+2. For unit testing, please refer to [ReadMe](Script-testing\README.MD)
