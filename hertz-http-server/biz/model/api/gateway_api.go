@@ -678,6 +678,7 @@ func (p *MultiplicationResponse) String() string {
 	return fmt.Sprintf("MultiplicationResponse(%+v)", *p)
 }
 
+// request structure that the user sends to the gateway
 type DivisionRequest struct {
 	FirstNum  string `thrift:"FirstNum,1,required" form:"FirstNum,required" json:"FirstNum,required"`
 	SecondNum string `thrift:"SecondNum,2,required" form:"SecondNum,required" json:"SecondNum,required"`
@@ -876,6 +877,7 @@ func (p *DivisionRequest) String() string {
 	return fmt.Sprintf("DivisionRequest(%+v)", *p)
 }
 
+// response structure sent by gateway to the user
 type DivisionResponse struct {
 	Quotient string `thrift:"Quotient,1" form:"Quotient" json:"Quotient" query:"Quotient"`
 }

@@ -4,14 +4,14 @@ package divisionmanagement
 
 import (
 	"context"
-	api "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/api"
+	management "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/management"
 	client "github.com/cloudwego/kitex/client"
 	callopt "github.com/cloudwego/kitex/client/callopt"
 )
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
-	DivideNumbers(ctx context.Context, req *api.DivisionRequest, callOptions ...callopt.Option) (r *api.DivisionResponse, err error)
+	DivideNumbers(ctx context.Context, req *management.DivisionRequest, callOptions ...callopt.Option) (r *management.DivisionResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -43,7 +43,7 @@ type kDivisionManagementClient struct {
 	*kClient
 }
 
-func (p *kDivisionManagementClient) DivideNumbers(ctx context.Context, req *api.DivisionRequest, callOptions ...callopt.Option) (r *api.DivisionResponse, err error) {
+func (p *kDivisionManagementClient) DivideNumbers(ctx context.Context, req *management.DivisionRequest, callOptions ...callopt.Option) (r *management.DivisionResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.DivideNumbers(ctx, req)
 }
