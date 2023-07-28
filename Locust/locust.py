@@ -9,18 +9,18 @@ from locust import HttpUser, task, between
 class WebsiteUser(HttpUser):
     '''Basic load testing '''
     # This is how long (s) it takes after it visited an endpoint  
-    wait_time = between(0, 1)
+    wait_time = between(1, 2)
 
     #post request example
     @task
     def multiply_req(self):
         self.client.post("/multiply", json={"FirstNum":"3", "SecondNum":"2"})
 
-    # @task
-    # def addition_req(self):
-    #     self.client.post("/add", json={"FirstNum":"3", "SecondNum":"2"})
+    @task
+    def addition_req(self):
+        self.client.post("/add", json={"FirstNum":"3", "SecondNum":"2"})
 
-    # @task
-    # def division_req(self):
-    #     self.client.post("/divide", json={"FirstNum":"3", "SecondNum":"2"})
+    @task
+    def division_req(self):
+        self.client.post("/divide", json={"FirstNum":"3", "SecondNum":"2"})
     

@@ -12,6 +12,7 @@ func main() {
   url := "http://127.0.0.1:8080/multiply"
   method := "POST"
   payload := strings.NewReader(`{` + "" +` "FirstNum": "6",`+ "" +` "SecondNum": "3"`+""+`}`)
+
   client := &http.Client {
   }
   req, err := http.NewRequest(method, url, payload)
