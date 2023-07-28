@@ -102,7 +102,7 @@ DivisionResponse divideNumbers(1: DivisionRequest req);
 ```
 Next, navigate to `microservice` directory and create a **folder** called `division-service`. At this point, your directory should look like this;
 
-![Directory-example](directory-example.png)
+![Directory-example](direcotry-example.png)
 
 Navigate into the `api-gateway\microservices\division-service` and run the followng command in the terminal
 
