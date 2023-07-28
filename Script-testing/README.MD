@@ -21,7 +21,7 @@ All 100 tests passed indicating that HTTP server was running and able to respond
 
 See image below for test results
 
-![Postman results](postman-test.png)
+![Postman results](images\postman-test.png)
 
 ## Load Balancing
 
