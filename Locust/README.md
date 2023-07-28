@@ -16,7 +16,7 @@ Next, open any web browsing application and enter `http://localhost:8089/` in th
 
 You will be brought to this page where you can enter the amount of users, the spawn rate and the HTTP server that you would like to conduct your load testing on. 
 
-![Pythong-webage](Python-webpage.png)
+![Pythong-webage](images/Python-webpage.png)
 
 Now you can test your HTTP servers!!
 
@@ -33,10 +33,10 @@ Results as shown;
 | Max number of requests before server error     | 3400        |
 | Average response time with 15 servers (50%ile) | 3400 ms     |
 
-![Locust-Report 1](Locust-report-1.png)
-![Locust-Report 2](Locust-report-2.png)
-![Locust-Report 3](Locust-report-3.png)
-![Locust-Report 4](Locust-report-4.png)
+![Locust-Report 1](images/Locust-report-1.png)
+![Locust-Report 2](images/Locust-report-2.png)
+![Locust-Report 3](images/Locust-report-3.png)
+![Locust-Report 4](images/Locust-report-4.png)
 
 
 
