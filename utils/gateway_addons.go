@@ -26,7 +26,7 @@ func MakeRpcRequestWithRetry(ctx context.Context, kitexClient genericclient.Clie
 	}
 
 	var errResp error
-	for i := 0; i < retryCount; i++ {
+	for i := 0; i < retryCount + 1; i++ {
 		// Making generic call to the specified method of the client
 		fmt.Printf("------> Retrying.... %d \n", i)
 		respRpc, err := kitexClient.GenericCall(ctx, methodName, stringedReq)
