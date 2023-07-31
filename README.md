@@ -162,7 +162,7 @@ Note that the RateLimit option is optional and up to your discretion.
 package main
 
 import (
-	api "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/api/divisionmanagement"
+	management "github.com/ararchch/api-gateway/microservices/division-service/kitex_gen/division/management/divisionmanagement"
 	"github.com/ararchch/api-gateway/utils"
 )
 
@@ -172,7 +172,7 @@ func main() {
 		3, // Number of servers you want to create to handle requests made to this microservice
 		"Division", // name of microservice (servers will be registered under this name)
 		new(DivisionManagementImpl), // the handler file that you defined in the previous step
-		api.NewServiceInfo(), // serviceInfo file containing generated details unique to your microservice
+		management.NewServiceInfo(), // serviceInfo file containing generated details unique to your microservice
 		utils.RateLimit(1000, 1000), // optional rate limit if you wish to include it
 	)
 
@@ -288,86 +288,6 @@ func AddNumbers(ctx context.Context, c *app.RequestContext) {
 	// initating and repackaging RPC response into new HTTP AdditionResponse
 	resp := &api.AdditionResponse{
 		Sum: respRpc.Sum,
-	}
-
-	// return to client as JSON HTTP response
-	c.JSON(consts.StatusOK, resp)
-}
-
-// MultiplyNumbers .
-// @router /multiply [POST]
-func MultiplyNumbers(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req api.MultiplicationRequest
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
-		return
-	}
-
-	// create new client (with loadbalancing, service discovery capabilities) using utils.GenerateClient feature
-	multiplicationClient, err := utils.GenerateClient("Multiplication", utils.RpcTimeout(3000), utils.ConnectionTimeout(500))
-	if err != nil {
-		panic(err)
-	}
-
-	// binding req params to RPC reqest struct (following the request format declared in RPC service IDL)
-	reqRpc := &multiplicationService.MultiplicationRequest{
-		FirstNum:  req.FirstNum,
-		SecondNum: req.SecondNum,
-	}
-
-	// initate new RPC response struct (as declared in RPC service IDL). This response variable will be populated by MakeRpcRequst function
-	var respRpc multiplicationService.MultiplicationResponse
-
-	// calling MakeRpcRequest method declared in the utils package
-	err = utils.MakeRpcRequest(ctx, multiplicationClient, "multiplyNumbers", reqRpc, &respRpc)
-	if err != nil {
-		panic(err)
-	}
-
-	// initating and repackaging RPC response into new HTTP AdditionResponse
-	resp := &api.MultiplicationResponse{
-		Product: respRpc.Product,
-	}
-
-	// return to client as JSON HTTP response
-	c.JSON(consts.StatusOK, resp)
-}
-
-// DivideNumbers .
-// @router /divide [POST]
-func DivideNumbers(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req api.DivisionRequest
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
-		return
-	}
-
-	// create new client (with loadbalancing, service discovery capabilities) using utils.GenerateClient feature
-	divisionClient, err := utils.GenerateClient("Division", utils.RpcTimeout(3000), utils.ConnectionTimeout(500))
-	if err != nil {
-		panic(err)
-	}
-
-	// binding req params to RPC reqest struct (following the request format declared in RPC service IDL)
-	reqRpc := &divisionService.DivisionRequest{
-		FirstNum:  req.FirstNum,
-		SecondNum: req.SecondNum,
-	}
-
-	var respRpc api.DivisionResponse
-
-	// calling MakeRpcRequestWithRetry method declared in the utils package
-	err = utils.MakeRpcRequestWithRetry(ctx, divisionClient, "divideNumbers", reqRpc, &respRpc, 3)
-	if err != nil {
-		panic(err)
-	}
-
-	resp := &api.DivisionResponse{
-		Quotient: respRpc.Quotient,
 	}
 
 	// return to client as JSON HTTP response
