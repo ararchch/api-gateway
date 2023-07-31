@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	kitexClient "github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/client/genericclient"
@@ -79,7 +80,30 @@ func MakeRpcRequest(ctx context.Context, kitexClient genericclient.Client, metho
 		panic(err)
 	}
 
+	 fmt.Println(respRpc)
+
 	json.Unmarshal([]byte(respRpc.(string)), response)
 
 	return nil
+}
+
+func MakeRpcRequest2(ctx context.Context, kitexClient genericclient.Client, methodName string, request string) (interface{}, error) {
+	// stringedReq, err := jsonStringify(request)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	//fmt.Println(stringedReq)
+
+	// making generic call to addNumbers method of client
+	respRpc, err := kitexClient.GenericCall(ctx, methodName, request)
+	if err != nil {
+		panic(err)
+	}
+
+	 fmt.Println(respRpc)
+
+	//json.Unmarshal([]byte(respRpc.(string)), response)
+
+	return respRpc, nil
 }
