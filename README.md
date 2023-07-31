@@ -121,6 +121,8 @@ Once you are ready, `cd` into the microservices directory, and run the generate_
 
 This should generate a directory within the microservices directory, called `[ServiceName]-service-[version]`. Eg: `Addition-service-v1`
 
+**You may notice that the pre-implemented services do not follow this convention. This is because they were generated before we realised that a potential clash may arise if there are multiple versions of IDLs used to generate the same service. As such we changed the directory naming convention to compensate for any future generated directories, however, the Multiplcation and Name services still follow the previous implementation.**
+
 `cd` into this generated directory, and open the `handler.go` file. This is where you will enter the logic for the microservice. In the case of Addition, add the following code to the `AddNumbers` method:
 
 ```
