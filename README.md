@@ -44,9 +44,7 @@ Make sure `etcd` is running.
 
 - Instructions [here](https://etcd.io/docs/v3.5/quickstart/) for `Mac` users. If your machine is running on `Windows`, unzip the folder and run the `etcd` application in the folder.
 
-In the `hertz-http-server` directory, run `go run .` in the terminal.
-
-In the `addition-service` directory, run `go run .` in the terminal.
+In the `gateway-server` directory, run `go run .` in the terminal.
 
 Test with `Postman` using the following command: `http://127.0.0.1:8080/add` with the JSON body of:
 
