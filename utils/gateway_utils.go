@@ -4,6 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
 
 	kitexClient "github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/client/genericclient"
@@ -26,8 +30,35 @@ func GenerateClient(serviceName string, opts ...kitexClient.Option) (genericclie
 		panic(err)
 	}
 
+	idlname := serviceName + "_management.thrift"
+	idlUrl := fmt.Sprintf("https://raw.githubusercontent.com/ararchch/api-gateway-idl/main/%s", idlname)
+
+
+	resp, err := http.Get(idlUrl)
+	if err != nil {
+		fmt.Println("Error in accessing IDL file\n")
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		// handle error
+		fmt.Println("Error in Reading IDL file\n")
+		panic(err)
+	}
+
+	tempDir := os.TempDir()
+	filename := filepath.Join(tempDir, idlname)
+	err = os.WriteFile(filename, body, 0644)
+	if err != nil {
+		fmt.Println("Error in creating temporary IDL file")
+		panic(err)
+	}
+
+
+
 	// importing idl for reference(generic call)
-	p, err := generic.NewThriftFileProvider("../thrift-idl/name_management.thrift")
+	p, err := generic.NewThriftFileProvider(filename)
 	if err != nil {
 		panic(err)
 	}
