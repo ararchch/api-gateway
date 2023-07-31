@@ -121,8 +121,14 @@ Upload your `IDL` file into this branch. This gateway supports versioning so you
 Once you have uploaded your `IDL` to your branch, it should be accessible via `https://raw.githubusercontent.com/ararchch/api-gateway-idl/[service]/[version].thrift`
 Do check that it works, before proceeding. Eg: `https://raw.githubusercontent.com/ararchch/api-gateway-idl/Addition/v1.thrift`
 
-Once you are ready, `cd` into the `microservices` directory, and run the `generate_service.go` program using the following command:
-`go run generate_service.go [service] [version]` In our demo, this would be `go run generate_service.go Addition v1`.
+### Generating microservices
+Navigate into the `microservices` directory, and run the `generate_service.go` program using the following command:
+
+```shell
+go run generate_service.go Addition v1 //go run generate_service.go [service] [version] 
+```
+
+In our demo, this would be `go run generate_service.go Addition v1`.
 
 This should generate a directory within the `microservices` directory, called `[ServiceName]-service-[version]`. Eg: `Addition-service-v1`
 
