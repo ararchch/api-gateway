@@ -16,7 +16,7 @@ import (
 	etcd "github.com/kitex-contrib/registry-etcd"
 )
 
-func GenerateClient(serviceName string, opts ...kitexClient.Option) (genericclient.Client, error){
+func GenerateClient(serviceName string, version string, opts ...kitexClient.Option) (genericclient.Client, error){
 
 	// inital declarations
 	var err error
@@ -30,9 +30,7 @@ func GenerateClient(serviceName string, opts ...kitexClient.Option) (genericclie
 		panic(err)
 	}
 
-	idlname := serviceName + "_management.thrift"
-	idlUrl := fmt.Sprintf("https://raw.githubusercontent.com/ararchch/api-gateway-idl/main/%s", idlname)
-
+	idlUrl := fmt.Sprintf("https://raw.githubusercontent.com/ararchch/api-gateway-idl/%s/%s", serviceName, version)
 
 	resp, err := http.Get(idlUrl)
 	if err != nil {
@@ -47,15 +45,14 @@ func GenerateClient(serviceName string, opts ...kitexClient.Option) (genericclie
 		panic(err)
 	}
 
+	tempIdlName := fmt.Sprintf("%s-%s.thrift", serviceName, version)
 	tempDir := os.TempDir()
-	filename := filepath.Join(tempDir, idlname)
+	filename := filepath.Join(tempDir, tempIdlName)
 	err = os.WriteFile(filename, body, 0644)
 	if err != nil {
 		fmt.Println("Error in creating temporary IDL file")
 		panic(err)
 	}
-
-
 
 	// importing idl for reference(generic call)
 	p, err := generic.NewThriftFileProvider(filename)
@@ -99,32 +96,7 @@ func jsonStringify(item any) (string, error) {
 	return string(jsonForm), nil
 }
 
-func MakeRpcRequest(ctx context.Context, kitexClient genericclient.Client, methodName string, request interface{}, response interface{}) (error) {
-	stringedReq, err := jsonStringify(request)
-	if err != nil {
-		panic(err)
-	}
-
-	// making generic call to addNumbers method of client
-	respRpc, err := kitexClient.GenericCall(ctx, methodName, stringedReq)
-	if err != nil {
-		panic(err)
-	}
-
-	 fmt.Println(respRpc)
-
-	json.Unmarshal([]byte(respRpc.(string)), response)
-
-	return nil
-}
-
-func MakeRpcRequest2(ctx context.Context, kitexClient genericclient.Client, methodName string, request string) (interface{}, error) {
-	// stringedReq, err := jsonStringify(request)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	//fmt.Println(stringedReq)
+func MakeRpcRequest(ctx context.Context, kitexClient genericclient.Client, methodName string, request string) (interface{}, error) {
 
 	// making generic call to addNumbers method of client
 	respRpc, err := kitexClient.GenericCall(ctx, methodName, request)
@@ -132,9 +104,7 @@ func MakeRpcRequest2(ctx context.Context, kitexClient genericclient.Client, meth
 		panic(err)
 	}
 
-	 fmt.Println(respRpc)
-
-	//json.Unmarshal([]byte(respRpc.(string)), response)
+	fmt.Println(respRpc)
 
 	return respRpc, nil
 }

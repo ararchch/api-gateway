@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -19,39 +18,35 @@ func ConnectionTimeout(dur int) kitexClient.Option {
 	return kitexClient.WithConnectTimeout(time.Duration(dur) * time.Millisecond)
 }
 
-func MakeRpcRequestWithRetry(ctx context.Context, kitexClient genericclient.Client, methodName string, request interface{}, response interface{}, retryCount int) error {
-	stringedReq, err := jsonStringify(request)
-	if err != nil {
-		return err
-	}
-
+func MakeRpcRequestWithRetry(ctx context.Context, kitexClient genericclient.Client, methodName string, request string, retryCount int) (interface{}, error) {
+	
 	var errResp error
 	for i := 0; i < retryCount + 1; i++ {
 		// Making generic call to the specified method of the client
-		fmt.Printf("------> Retrying.... %d \n", i)
-		respRpc, err := kitexClient.GenericCall(ctx, methodName, stringedReq)
+		if i > 0 {
+			fmt.Printf("------> Retrying.... %d \n", i)
+		}
+		
+		respRpc, err := kitexClient.GenericCall(ctx, methodName, request)
 		if err != nil {
 			// Retry on error
 			errResp = err
 			continue
 		}
 
-		// Unmarshal the response
-		err = json.Unmarshal([]byte(respRpc.(string)), response)
-		if err != nil {
-			return err
-		}
+		fmt.Println(respRpc)
 
-		// Return nil if the request succeeded
-		return nil
+		// Return response, nil if the request succeeded
+		return respRpc, nil
+
 	}
 
 	// Return the last error if all retries failed
 	if errResp != nil {
 		fmt.Printf("Failed despite %d retries \n", retryCount)
-		return errResp
+		return nil, errResp
 	}
 
 	// If no retries were done, return a generic error
-	return errors.New("retry failed")
+	return nil, errors.New("retry failed")
 }
