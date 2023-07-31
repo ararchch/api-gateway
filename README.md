@@ -125,7 +125,7 @@ Do check that it works, before proceeding. Eg: `https://raw.githubusercontent.co
 Navigate into the `microservices` directory, and run the `generate_service.go` program using the following command:
 
 ```shell
-go run generate_service.go Addition v1 //go run generate_service.go [service] [version] 
+go run generate_service.go [service] [version] 
 ```
 
 In our demo, this would be `go run generate_service.go Addition v1`.
