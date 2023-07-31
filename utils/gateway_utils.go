@@ -4,10 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
 
 	kitexClient "github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/client/genericclient"
@@ -31,37 +27,10 @@ func GenerateClient(serviceName string, version string, opts ...kitexClient.Opti
 		panic(err)
 	}
 
-	// creates file name using the version following pre-defined convention
-	idlFileName := fmt.Sprintf("%s.thrift", version)
-
-	// gets IDL from the [service name] branch of the IDL repo
-	idlUrl := fmt.Sprintf("https://raw.githubusercontent.com/ararchch/api-gateway-idl/%s/%s", serviceName, idlFileName)
-
-	// accesses latest version of IDL file from github repo
-	resp, err := http.Get(idlUrl)
+	// calling ReadIdlFromGithub method of utils package
+	idlPath, err := ReadIdlFromGithub(serviceName, version)
 	if err != nil {
-		fmt.Println("Error in accessing IDL file")
-	}
-	defer resp.Body.Close()
-
-	// extracts bytes from response
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		// handle error
-		fmt.Println("Error in Reading IDL file\n")
-		panic(err)
-	}
-
-	// name of new temp file to be created
-	tempIdlName := fmt.Sprintf("%s-%s", serviceName, idlFileName)
-	// accesses temp directory of OS of system the server is running on
-	tempDir := os.TempDir()
-	// creates full local IDL path
-	idlPath := filepath.Join(tempDir, tempIdlName)
-	// writes temp IDL file with same data extracted from the github IDL file
-	err = os.WriteFile(idlPath, body, 0644)
-	if err != nil {
-		fmt.Println("Error in creating temporary IDL file")
+		fmt.Println("Error in reading IDL, please check IDL and retry")
 		panic(err)
 	}
 
@@ -124,42 +93,4 @@ func MakeRpcRequest(ctx context.Context, kitexClient genericclient.Client, metho
 	
 	// return to client
 	return respRpc, nil
-}
-
-func ReadIdlFromGithub(service string, version string) (string, error) {
-	// creates file name using the version following pre-defined convention
-	idlFileName := fmt.Sprintf("%s.thrift", version)
-
-	// gets IDL from the [service name] branch of the IDL repo
-	idlUrl := fmt.Sprintf("https://raw.githubusercontent.com/ararchch/api-gateway-idl/%s/%s", service, idlFileName)
-
-	// Download the IDL file
-	resp, err := http.Get(idlUrl)
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
-
-	// extracts bytes from response
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		// handle error
-		fmt.Println("Error in Reading IDL file\n")
-		panic(err)
-	}
-
-	// name of new temp file to be created
-	tempIdlName := fmt.Sprintf("%s-%s", service, idlFileName)
-	// accesses temp directory of OS of system the server is running on
-	tempDir := os.TempDir()
-	// creates full local IDL path
-	idlPath := filepath.Join(tempDir, tempIdlName)
-	// writes temp IDL file with same data extracted from the github IDL file
-	err = os.WriteFile(idlPath, body, 0644)
-	if err != nil {
-		fmt.Println("Error in creating temporary IDL file")
-		panic(err)
-	}
-
-	return idlPath, nil
 }
