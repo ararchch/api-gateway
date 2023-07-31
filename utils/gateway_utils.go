@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	kitexClient "github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/client/genericclient"
@@ -11,7 +12,8 @@ import (
 	etcd "github.com/kitex-contrib/registry-etcd"
 )
 
-func GenerateClient(serviceName string, opts ...kitexClient.Option) (genericclient.Client, error){
+// generates and returns a new kitex client based on input parameters
+func GenerateClient(serviceName string, version string, opts ...kitexClient.Option) (genericclient.Client, error){
 
 	// inital declarations
 	var err error
@@ -25,8 +27,15 @@ func GenerateClient(serviceName string, opts ...kitexClient.Option) (genericclie
 		panic(err)
 	}
 
+	// calling ReadIdlFromGithub method of utils package
+	idlPath, err := ReadIdlFromGithub(serviceName, version)
+	if err != nil {
+		fmt.Println("Error in reading IDL, please check IDL and retry")
+		panic(err)
+	}
+
 	// importing idl for reference(generic call)
-	p, err := generic.NewThriftFileProvider("../thrift-idl/gateway_api.thrift")
+	p, err := generic.NewThriftFileProvider(idlPath)
 	if err != nil {
 		panic(err)
 	}
@@ -37,11 +46,16 @@ func GenerateClient(serviceName string, opts ...kitexClient.Option) (genericclie
 		panic(err)
 	}
 
+	//creates kitex client options array
 	var options []kitexClient.Option
+
+	// adds service discovery, load balancing capabilities to options array (these 'options' are permanently integrated)
 	options = append(options,
 		kitexClient.WithResolver(r),
 		kitexClient.WithLoadBalancer(lb),
 	)
+
+	// appends any passed in options from request side to the gateway
 	options = append(options, opts...)
 
 	// create new generic client
@@ -54,11 +68,12 @@ func GenerateClient(serviceName string, opts ...kitexClient.Option) (genericclie
 		panic(err)
 	}
 
+	// returns client to caller
 	return client, nil
 }
 
+// converts item to json string format
 func jsonStringify(item any) (string, error) {
-	// convert to request struct to JSON format (so it can be converted to json string)
 	jsonForm, err := json.Marshal(&item)
 	if err != nil {
 		panic(err)
@@ -67,19 +82,15 @@ func jsonStringify(item any) (string, error) {
 	return string(jsonForm), nil
 }
 
-func MakeRpcRequest(ctx context.Context, kitexClient genericclient.Client, methodName string, request interface{}, response interface{}) (error) {
-	stringedReq, err := jsonStringify(request)
+// makes rpc request to kitex client based on input parameters
+func MakeRpcRequest(ctx context.Context, kitexClient genericclient.Client, methodName string, request string) (interface{}, error) {
+
+	// making generic call to specified method of client
+	respRpc, err := kitexClient.GenericCall(ctx, methodName, request)
 	if err != nil {
 		panic(err)
 	}
-
-	// making generic call to addNumbers method of client
-	respRpc, err := kitexClient.GenericCall(ctx, methodName, stringedReq)
-	if err != nil {
-		panic(err)
-	}
-
-	json.Unmarshal([]byte(respRpc.(string)), response)
-
-	return nil
+	
+	// return to client
+	return respRpc, nil
 }

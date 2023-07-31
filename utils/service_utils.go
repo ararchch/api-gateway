@@ -12,6 +12,7 @@ import (
 	"github.com/cloudwego/kitex/server"
 )
 
+// returns unused port on system (to be used by kitex clients / utils package when generating servers)
 func GetUnusedPort(domain string) (*net.TCPAddr, error){
 	listener, err := net.Listen("tcp", fmt.Sprintf("%s:0", domain))
 	if err != nil {
@@ -22,6 +23,7 @@ func GetUnusedPort(domain string) (*net.TCPAddr, error){
 	return listener.Addr().(*net.TCPAddr), nil
 }
 
+// creates and registers multiple servers handling the same microservice using provided inputs and GetUnusedPort method, returns array of servers
 func CreateMultipleServers(amt int, serviceName string, serviceHandler interface{}, svcInfo *serviceinfo.ServiceInfo, opts ...server.Option) [] *server.Server {
 	
 	servers := make([]*server.Server, amt)
@@ -54,6 +56,7 @@ func CreateMultipleServers(amt int, serviceName string, serviceHandler interface
 	return servers
 }
 
+// Accepts an array of servers as an argument and runs all of them. Can be used to run kitex servers.
 func RunServers(servers []*server.Server) {
 	var wg sync.WaitGroup
 	wg.Add(len(servers))
