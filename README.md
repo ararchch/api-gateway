@@ -109,7 +109,7 @@ Next, navigate to `microservice` directory and create a **folder** called `divis
 Navigate into the `api-gateway\microservices\division-service` and run the followng command in the terminal
 
 ```shell
-kitex -module github.com/ararchch/api-gateway -service Division ../thrift-idl/division_management.thrift
+kitex -module github.com/ararchch/api-gateway -service Division ../../thrift-idl/division_management.thrift
 
 ```
 
