@@ -2,6 +2,9 @@
 
 An API Gateway written in `GO` that uses CloudWeGo `Kitex` and `Hertz` frameworks to develop an API Gateway that accepts `HTTP` requests encoded in `JSON` format, Utilising the Generic-Call feature of `Kitex` to translate these requests into `Thrift` binary format requests. The API Gateway will then proceed to forward the translated requests to one of the backend `RPC` servers obtained from the registry centre. 
 
+**At the last minute, we realised that we misinterpret the instructions and improved our API gateway. We created a branch called `Old-APi-Gateway` to store the older-version of our API**<br>
+**We have improved our project in this Main branch but unfortunately, we do not have time to do the testing and therefore, the testing done here is for the older-version**
+
 ## Tech Design
 
 [Tech Design Link](https://array-api-gateway.notion.site/Project-README-Milestone-3-c7df8b1dfe444b1c98e0cc0a2b53c55c) 
