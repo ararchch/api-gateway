@@ -27,7 +27,7 @@ func GenerateClient(serviceName string, opts ...kitexClient.Option) (genericclie
 	}
 
 	// importing idl for reference(generic call)
-	p, err := generic.NewThriftFileProvider("../thrift-idl/gateway_api.thrift")
+	p, err := generic.NewThriftFileProvider("../thrift-idl/name_management.thrift")
 	if err != nil {
 		panic(err)
 	}

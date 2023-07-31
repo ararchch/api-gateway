@@ -4,7 +4,9 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+
 	//"encoding/json"
 
 	"github.com/cloudwego/hertz/pkg/app"
@@ -52,5 +54,8 @@ func Ping(ctx context.Context, c *app.RequestContext) {
 		panic(err)
 	}
 
-	c.JSON(consts.StatusOK, resp)
+	var obj interface{}
+	json.Unmarshal([]byte(resp.(string)), &obj)
+	
+	c.JSON(consts.StatusOK, obj)
 }
