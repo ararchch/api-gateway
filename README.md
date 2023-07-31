@@ -135,7 +135,7 @@ This should generate a directory within the `microservices` directory, called `[
 **NOTE You may notice that the pre-implemented services do not follow this convention. This is because they were generated before we realised that a potential clash may arise if there are multiple versions of IDLs used to generate the same service. As such we changed the directory naming convention to compensate for any future generated directories, however, the Multiplcation and Name services still follow the previous implementation.**
 
 ### Updating logic 
-`cd` into this generated directory, and open the `handler.go` file. This is where you will enter the logic for the microservice. In the case of Addition, add the following code to the `AddNumbers` method:
+Navigate into this generated directory (`Addition-service-v1`), and open the `handler.go` file. This is where you will enter the logic for the microservice. In the case of Addition, add the following code to the `AddNumbers` method:
 
 ```Go
 // parse int from string of First Number
@@ -159,7 +159,7 @@ return &management.AdditionResponse{
 }, nil
 ```
 
-Remember to tidy your imports after this. Then proceed to the `main.go` file and add the following code to generate and run servers that will run your microservice:
+Remember to tidy your imports after this. In the same directory, proceed to the `main.go` file and add the following code to generate and run servers that will run your microservice:
 
 ```Go
 servers := utils.CreateMultipleServers(
@@ -172,14 +172,17 @@ servers := utils.CreateMultipleServers(
 
 utils.RunServers(servers)
 ```
-Note that this uses a number of useful methods offerred by the `utils` package within the gateway. You do not have to use them if you don't want to though. In addition `Kitex` offers a number of more options for the gateway which have not been wrapped by the current utils package. You can feel free to add any into the `CreateMultipleServers` method if you wish (after the RateLimit option)
+Note that this uses a number of useful methods offered by the `utils` package within the gateway. You do not have to use them if you don't want to though. In addition `Kitex` offers a number of more options for the gateway which have not been wrapped by the current utils package. You can feel free to add any into the `CreateMultipleServers` method if you wish (after the RateLimit option)
 
 Once you have done this, you have finished implementing your service!
 
 ### Run the demo
-Navigate into the `gateway-server` directory, and running the `go run .` command.
-You can run the newly created `Addition` service by changing to its directory and running `go run .` as well. 
-Finally, you can test by sending a post request as follows:
+
+Navigate into the `gateway-server` directory, and run the `go run .` command.
+
+Navigate into the `Addition-service-v1` directory and run `go run .` as well. 
+
+Finally, you can test by sending a `POST` request as follows:
 
 **Address**: `http://127.0.0.1:8080/Addition/v1/addNumbers` 
 
