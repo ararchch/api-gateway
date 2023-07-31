@@ -23,7 +23,7 @@ func main() {
 		panic(err)
 	}
 
-	dirName := fmt.Sprintf("%s-service", serviceName)
+	dirName := fmt.Sprintf("%s-service-%s", serviceName, version)
 
 	// Get the current working directory
 	cwd, err := os.Getwd()
@@ -40,7 +40,7 @@ func main() {
 		panic(err)
 	}
 
-	// Change the working directory to 'serviceName-service'
+	// Change the working directory to 'serviceName-service-version'
 	err = os.Chdir(newDir)
 	if err != nil {
 		panic(err)
