@@ -7,7 +7,7 @@ An API Gateway written in `GO` that uses CloudWeGo `Kitex` and `Hertz` framework
 
 ## Tech Design
 
-[Tech Design Link](https://array-api-gateway.notion.site/Project-README-Milestone-3-c7df8b1dfe444b1c98e0cc0a2b53c55c) 
+[Tech Design Link](https://array-api-gateway.notion.site/Project-README-Design-Document-API-Gateway-4e4eeaed59f04b6fa58f998d006efeeb) 
 
 ## API Gateway Design Diagram
 ![API Gateway Diagram](API-Diagram.png)
