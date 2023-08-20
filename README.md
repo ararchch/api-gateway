@@ -5,9 +5,6 @@ An API Gateway written in `GO` that uses CloudWeGo `Kitex` and `Hertz` framework
 **Note to assessors: Only very recently, we realised that we misinterpreted the instructions provided, and we made some last minute changes to our API gateway. We have created a branch called `Old-APi-Gateway` to store the previous implementation.**<br>
 **Unfortunately, while we have improved our project in this Main branch, we did not have enough time to do the testing/benchmarking, so the testing done here is for the older-version. We are really sorry for the trouble**
 
-## Tech Design
-
-[Tech Design Link](https://array-api-gateway.notion.site/Project-README-Design-Document-API-Gateway-4e4eeaed59f04b6fa58f998d006efeeb) 
 
 ## API Gateway Design Diagram
 ![API Gateway Diagram](API-Diagram.png)
