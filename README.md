@@ -2,10 +2,6 @@
 
 An API Gateway written in `GO` that uses CloudWeGo `Kitex` and `Hertz` frameworks to develop an API Gateway that accepts `HTTP` requests encoded in `JSON` format, Utilising the Generic-Call feature of `Kitex` to translate these requests into `Thrift` binary format requests. The API Gateway will then proceed to forward the translated requests to one of the backend `RPC` servers obtained from the registry centre. 
 
-**Note to assessors: Only very recently, we realised that we misinterpreted the instructions provided, and we made some last minute changes to our API gateway. We have created a branch called `Old-APi-Gateway` to store the previous implementation.**<br>
-**Unfortunately, while we have improved our project in this Main branch, we did not have enough time to do the testing/benchmarking, so the testing done here is for the older-version. We are really sorry for the trouble**
-
-
 ## API Gateway Design Diagram
 ![API Gateway Diagram](API-Diagram.png)
 
