@@ -15,7 +15,6 @@ An API Gateway written in `GO` that uses CloudWeGo `Kitex` and `Hertz` framework
 6. The API gateway will process and encode the response as an HTTP Response.
 
 ## Testing
-**At the last minute, we realised that we misinterpret the instructions and improved our API gateway. Therefore these tests were done on the older-version of the project**
 1. For load testing and benchmarking analysis, please refer to [Locust-ReadMe](Locust)
 2. For unit testing, please refer to [Script-testing-ReadMe](Script-testing)
 
